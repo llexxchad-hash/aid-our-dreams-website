@@ -72,6 +72,13 @@
           <span class="stat-label">Unread / New</span>
         </div>
       </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background:rgba(139,92,246,0.15);color:#8b5cf6;">🤝</div>
+        <div class="stat-info">
+          <span class="stat-value" id="stat-partnerships">0</span>
+          <span class="stat-label">Partnership Inquiries</span>
+        </div>
+      </div>
     </div>
 
     <!-- Contact Messages -->
@@ -123,6 +130,33 @@
         </table>
       </div>
     </div>
+
+    <!-- Partnership Inquiries -->
+    <div class="admin-card">
+      <div class="card-header">
+        <h2>🤝 Partnership Inquiries <span style="font-weight:400;color:var(--text-muted);font-size:0.85rem;">(<span id="partnerships-count">0</span>)</span></h2>
+      </div>
+      <div class="table-responsive">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Status</th>
+              <th>Organization</th>
+              <th>Contact</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Type</th>
+              <th>Message</th>
+              <th>Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="partnerships-table-body">
+            <tr><td colspan="9"><div class="empty-state"><div class="empty-icon">🤝</div><h3>No inquiries yet</h3><p>Partnership form submissions will appear here.</p></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -133,6 +167,7 @@
       await new Promise(r => setTimeout(r, 300));
       await loadMessagesAdmin();
       await loadVolunteersAdmin();
+      await loadPartnershipsAdmin();
       updateMessageStats();
     });
   </script>

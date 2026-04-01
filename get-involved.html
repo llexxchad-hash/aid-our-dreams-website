@@ -71,12 +71,6 @@
 
         <div class="involve-info fade-in">
           <div class="card">
-            <div class="card-icon">🤝</div>
-            <h3>Partner With Us</h3>
-            <p>We welcome partnerships with businesses, NGOs, and institutions who share our vision. Together we can scale our impact and reach more communities.</p>
-            <a href="contact.html" class="btn-secondary btn-sm" style="margin-top:16px;">Contact Us</a>
-          </div>
-          <div class="card">
             <div class="card-icon">💛</div>
             <h3>Make a Donation</h3>
             <p>Your financial support directly funds our programs — from school supplies to mentorship sessions. Every contribution changes a young person's life.</p>
@@ -93,6 +87,56 @@
             </div>
           </div>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Partnership Form Section -->
+  <section style="padding:60px 0;background:var(--soft-gray);">
+    <div class="container">
+      <div class="text-center fade-in">
+        <span class="section-label">Collaborate With Us</span>
+        <h2 class="section-title">Partnership Inquiry</h2>
+        <p class="section-subtitle">We welcome partnerships with businesses, NGOs, and institutions who share our vision. Fill out the form below and we'll be in touch.</p>
+      </div>
+      <div class="volunteer-form fade-in" style="max-width:600px;margin:32px auto 0;">
+        <form id="partnership-form" data-validate>
+          <div class="form-group">
+            <label for="partner-org">Organization / Business Name <span style="color:red;">*</span></label>
+            <input type="text" id="partner-org" name="org_name" placeholder="e.g. Hope Foundation" required>
+            <span class="error-msg">Please enter your organization name.</span>
+          </div>
+          <div class="form-group">
+            <label for="partner-name">Contact Person <span style="color:red;">*</span></label>
+            <input type="text" id="partner-name" name="contact_name" placeholder="Enter your full name" required>
+            <span class="error-msg">Please enter a contact name.</span>
+          </div>
+          <div class="form-group">
+            <label for="partner-email">Email Address <span style="color:red;">*</span></label>
+            <input type="email" id="partner-email" name="email" placeholder="you@organization.com" required>
+            <span class="error-msg">Please enter a valid email.</span>
+          </div>
+          <div class="form-group">
+            <label for="partner-phone">Phone Number</label>
+            <input type="tel" id="partner-phone" name="phone" placeholder="+231 000 000 0000">
+          </div>
+          <div class="form-group">
+            <label for="partner-type">Type of Partnership</label>
+            <select id="partner-type" name="org_type">
+              <option value="" disabled selected>Select type</option>
+              <option value="corporate">Corporate Sponsor</option>
+              <option value="ngo">NGO / Non-Profit</option>
+              <option value="school">School / Institution</option>
+              <option value="media">Media Partner</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="partner-message">Tell us about the partnership you have in mind</label>
+            <textarea id="partner-message" name="message" rows="4" placeholder="Briefly describe how you'd like to collaborate..."></textarea>
+          </div>
+          <button type="submit" class="btn-primary" style="width:100%;">Submit Partnership Inquiry</button>
+        </form>
       </div>
     </div>
   </section>

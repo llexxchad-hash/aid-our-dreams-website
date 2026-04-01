@@ -384,6 +384,7 @@ async function submitFormData(form) {
   // Determine form type by checking field IDs
   const isVolunteer = !!form.querySelector('#vol-name');
   const isContact = !!form.querySelector('#contact-name');
+  const isPartnership = !!form.querySelector('#partner-org');
 
   if (typeof window.supabase !== 'undefined' && typeof SUPABASE_URL !== 'undefined' && SUPABASE_URL !== 'YOUR_SUPABASE_URL') {
     const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -405,6 +406,17 @@ async function submitFormData(form) {
         message: form.querySelector('#contact-message').value.trim()
       };
       const { error } = await client.from('messages').insert(record);
+      if (error) throw error;
+    } else if (isPartnership) {
+      const record = {
+        org_name: form.querySelector('#partner-org').value.trim(),
+        contact_name: form.querySelector('#partner-name').value.trim(),
+        email: form.querySelector('#partner-email').value.trim(),
+        phone: form.querySelector('#partner-phone').value.trim() || null,
+        org_type: form.querySelector('#partner-type').value || null,
+        message: form.querySelector('#partner-message').value.trim() || null
+      };
+      const { error } = await client.from('partnerships').insert(record);
       if (error) throw error;
     }
   }

@@ -448,13 +448,64 @@ async function deleteVolunteer(id) {
   showToast('Application deleted');
 }
 
+// ---------- Partnerships Admin ----------
+async function loadPartnershipsAdmin() {
+  const tbody = document.getElementById('partnerships-table-body');
+  if (!tbody) return;
+
+  const partnerships = await getData('partnerships');
+  const countEl = document.getElementById('partnerships-count');
+  const statEl = document.getElementById('stat-partnerships');
+  if (countEl) countEl.textContent = partnerships.length;
+  if (statEl) statEl.textContent = partnerships.length;
+
+  if (partnerships.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="9"><div class="empty-state"><div class="empty-icon">🤝</div><h3>No inquiries yet</h3><p>Partnership form submissions will appear here.</p></div></td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = partnerships.map(p => `
+    <tr>
+      <td><span class="status-badge ${p.status === 'new' ? 'upcoming' : 'past'}">${escapeHtml(p.status)}</span></td>
+      <td>${escapeHtml(p.org_name)}</td>
+      <td>${escapeHtml(p.contact_name)}</td>
+      <td><a href="mailto:${escapeHtml(p.email)}">${escapeHtml(p.email)}</a></td>
+      <td>${escapeHtml(p.phone || 'N/A')}</td>
+      <td>${escapeHtml(p.org_type || 'N/A')}</td>
+      <td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${escapeHtml(p.message || '')}">${escapeHtml(p.message || 'N/A')}</td>
+      <td>${p.created_at ? new Date(p.created_at).toLocaleDateString() : 'N/A'}</td>
+      <td class="actions">
+        ${p.status === 'new' ? `<button class="btn btn-outline btn-sm" onclick="markPartnershipReviewed('${p.id}')">Reviewed</button>` : ''}
+        <button class="btn btn-danger btn-sm" onclick="deletePartnership('${p.id}')">Delete</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+async function markPartnershipReviewed(id) {
+  await updateData('partnerships', id, { status: 'reviewed' });
+  await loadPartnershipsAdmin();
+  updateMessageStats();
+  showToast('Partnership inquiry marked as reviewed');
+}
+
+async function deletePartnership(id) {
+  if (!confirm('Delete this partnership inquiry?')) return;
+  await deleteData('partnerships', id);
+  await loadPartnershipsAdmin();
+  updateMessageStats();
+  showToast('Partnership inquiry deleted');
+}
+
 // ---------- Message Stats ----------
 async function updateMessageStats() {
   const messages = await getData('messages');
   const volunteers = await getData('volunteers');
+  const partnerships = await getData('partnerships');
   const unreadMessages = messages.filter(m => m.status === 'unread').length;
   const newVolunteers = volunteers.filter(v => v.status === 'new').length;
-  const totalUnread = unreadMessages + newVolunteers;
+  const newPartnerships = partnerships.filter(p => p.status === 'new').length;
+  const totalUnread = unreadMessages + newVolunteers + newPartnerships;
 
   const statUnread = document.getElementById('stat-unread');
   if (statUnread) statUnread.textContent = totalUnread;
