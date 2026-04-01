@@ -98,8 +98,13 @@
           <span class="stat-value" id="stat-messages-dash">0</span>
           <span class="stat-label">Messages</span>
         </div>
-      </div>
-    </div>
+      </div>      <div class="stat-card">
+        <div class="stat-icon green">⭐</div>
+        <div class="stat-info">
+          <span class="stat-value" id="stat-rating-avg">—</span>
+          <span class="stat-label">Avg Rating</span>
+        </div>
+      </div>    </div>
 
     <!-- Quick Actions -->
     <div class="admin-card">
@@ -216,6 +221,14 @@
 
       // Update nav messages badge
       await updateMessageStats();
+
+      // Load rating average
+      const ratings = await getData('ratings');
+      const ratingEl = document.getElementById('stat-rating-avg');
+      if (ratingEl && ratings.length > 0) {
+        const avg = (ratings.reduce((s, r) => s + r.rating, 0) / ratings.length).toFixed(1);
+        ratingEl.textContent = avg + '/5';
+      }
 
       // Change password form
       const pwForm = document.getElementById('change-password-form');

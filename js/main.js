@@ -247,7 +247,10 @@ async function loadDynamicContent() {
       div.className = 'gallery-item fade-in visible';
       div.innerHTML = `
         <img src="${escapeHtml(item.src)}" alt="${escapeHtml(item.alt)}" loading="lazy">
-        <div class="gallery-overlay"><span>🔍</span></div>
+        <div class="gallery-overlay">
+          <span>🔍</span>
+          <a class="download-btn" href="${escapeHtml(item.src)}" download title="Download" onclick="event.stopPropagation()">⬇</a>
+        </div>
       `;
       galleryGrid.appendChild(div);
     });
@@ -338,12 +341,14 @@ function rebindGalleryModal() {
   const modalClose = modal.querySelector('.modal-close');
   const modalPrev = modal.querySelector('.modal-prev');
   const modalNext = modal.querySelector('.modal-next');
+  const modalDownload = modal.querySelector('#modal-download');
   const images = Array.from(galleryItems);
   let idx = 0;
 
-  function open(i) { idx = i; const img = images[idx].querySelector('img'); if(img){modalImg.src=img.src;modalImg.alt=img.alt;} modal.classList.add('active'); document.body.style.overflow='hidden'; }
+  function updateDownload(src) { if(modalDownload) modalDownload.href = src; }
+  function open(i) { idx = i; const img = images[idx].querySelector('img'); if(img){modalImg.src=img.src;modalImg.alt=img.alt;updateDownload(img.src);} modal.classList.add('active'); document.body.style.overflow='hidden'; }
   function close() { modal.classList.remove('active'); document.body.style.overflow=''; }
-  function nav(d) { idx=(idx+d+images.length)%images.length; const img=images[idx].querySelector('img'); if(img){modalImg.src=img.src;modalImg.alt=img.alt;} }
+  function nav(d) { idx=(idx+d+images.length)%images.length; const img=images[idx].querySelector('img'); if(img){modalImg.src=img.src;modalImg.alt=img.alt;updateDownload(img.src);} }
 
   galleryItems.forEach((item,i) => item.addEventListener('click', () => open(i)));
   modalClose.addEventListener('click', close);
@@ -389,3 +394,82 @@ async function submitFormData(form) {
   }
   // If Supabase not available, form still shows success (graceful degradation)
 }
+
+/* ============================================
+   Rating Widget
+   ============================================ */
+(function() {
+  const starsContainer = document.getElementById('rating-stars');
+  if (!starsContainer) return;
+
+  const feedbackDiv = document.getElementById('rating-feedback');
+  const submitBtn = document.getElementById('rating-submit');
+  const avgEl = document.getElementById('rating-avg');
+  let selectedRating = 0;
+
+  // Load average rating on page load
+  loadAverageRating();
+
+  // Star click handler
+  starsContainer.querySelectorAll('button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      selectedRating = parseInt(btn.dataset.value);
+      starsContainer.querySelectorAll('button').forEach(b => {
+        b.classList.toggle('active', parseInt(b.dataset.value) <= selectedRating);
+      });
+      if (feedbackDiv) feedbackDiv.style.display = 'block';
+    });
+  });
+
+  // Submit handler
+  if (submitBtn) {
+    submitBtn.addEventListener('click', async () => {
+      if (selectedRating === 0) return;
+
+      // Prevent duplicate submissions
+      if (localStorage.getItem('aod_rated')) {
+        if (avgEl) avgEl.textContent = 'You have already submitted a rating. Thank you!';
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Submitting...';
+
+      try {
+        if (typeof window.supabase !== 'undefined' && typeof SUPABASE_URL !== 'undefined' && SUPABASE_URL !== 'YOUR_SUPABASE_URL') {
+          const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+          const feedback = document.getElementById('rating-text').value.trim();
+          const { error } = await client.from('ratings').insert({ rating: selectedRating, feedback: feedback || null });
+          if (error) throw error;
+        }
+        localStorage.setItem('aod_rated', 'true');
+        starsContainer.innerHTML = '<p style="color:var(--deep-green);font-weight:600;">Thank you for your rating! ⭐</p>';
+        if (feedbackDiv) feedbackDiv.style.display = 'none';
+        loadAverageRating();
+      } catch (e) {
+        console.error(e);
+        submitBtn.textContent = 'Submit Rating';
+        submitBtn.disabled = false;
+      }
+    });
+  }
+
+  async function loadAverageRating() {
+    try {
+      if (typeof window.supabase !== 'undefined' && typeof SUPABASE_URL !== 'undefined' && SUPABASE_URL !== 'YOUR_SUPABASE_URL') {
+        const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const { data, error } = await client.from('ratings').select('rating');
+        if (!error && data && data.length > 0) {
+          const avg = (data.reduce((sum, r) => sum + r.rating, 0) / data.length).toFixed(1);
+          if (avgEl) avgEl.textContent = `Average rating: ${avg}/5 (${data.length} ${data.length === 1 ? 'review' : 'reviews'})`;
+        }
+      }
+    } catch (e) { /* silently fail */ }
+
+    // If already rated, show thank you
+    if (localStorage.getItem('aod_rated') && starsContainer) {
+      starsContainer.innerHTML = '<p style="color:var(--deep-green);font-weight:600;">Thank you for your rating! ⭐</p>';
+      if (feedbackDiv) feedbackDiv.style.display = 'none';
+    }
+  }
+})();

@@ -146,6 +146,27 @@
     </div>
   </section>
 
+  <!-- Rating Widget -->
+  <section class="rating-section fade-in">
+    <div class="container">
+      <span class="section-label">Your Feedback</span>
+      <h2 class="section-title">Rate Our Website</h2>
+      <p style="color:var(--text-muted);margin-bottom:8px;">Let us know how you feel about our site!</p>
+      <div class="rating-stars" id="rating-stars">
+        <button data-value="1" aria-label="1 star">⭐</button>
+        <button data-value="2" aria-label="2 stars">⭐</button>
+        <button data-value="3" aria-label="3 stars">⭐</button>
+        <button data-value="4" aria-label="4 stars">⭐</button>
+        <button data-value="5" aria-label="5 stars">⭐</button>
+      </div>
+      <div class="rating-feedback" id="rating-feedback" style="display:none;">
+        <textarea id="rating-text" placeholder="Leave a short comment (optional)..."></textarea>
+        <button class="btn-primary btn-sm rating-submit" id="rating-submit">Submit Rating</button>
+      </div>
+      <p class="rating-avg" id="rating-avg"></p>
+    </div>
+  </section>
+
   <!-- Footer -->
   <footer class="footer">
     <div class="container">
