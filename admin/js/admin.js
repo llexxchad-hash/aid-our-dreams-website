@@ -302,6 +302,58 @@ async function editSlide(id) {
   showToast('Editing slide — update and save', 'success');
 }
 
+// ---------- Programs Management ----------
+async function loadProgramsAdmin() {
+  const tbody = document.getElementById('programs-table-body');
+  if (!tbody) return;
+
+  const programs = await getData('programs');
+  const countEl = document.getElementById('stat-programs');
+  if (countEl) countEl.textContent = programs.length;
+
+  if (programs.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><div class="empty-icon">📋</div><h3>No programs yet</h3><p>Add your first program using the form above.</p></div></td></tr>`;
+    return;
+  }
+
+  const categoryLabels = { current: 'Current Program', outreach: 'Outreach', past: 'Past Project' };
+  tbody.innerHTML = programs.map(p => `
+    <tr>
+      <td><img src="${escapeHtml(p.image)}" class="thumb" alt="${escapeHtml(p.title)}"></td>
+      <td><strong>${escapeHtml(p.title)}</strong><br><small style="color:var(--text-muted)">${escapeHtml((p.description || '').substring(0, 80))}</small></td>
+      <td><span class="status-badge ${p.category === 'current' ? 'upcoming' : 'past'}">${escapeHtml(categoryLabels[p.category] || p.category)}</span></td>
+      <td>${p.created_at ? new Date(p.created_at).toLocaleDateString() : 'N/A'}</td>
+      <td class="actions">
+        <button class="btn btn-outline btn-sm" onclick="editProgram('${p.id}')">Edit</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteProgram('${p.id}')">Delete</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+async function deleteProgram(id) {
+  if (!confirm('Delete this program?')) return;
+  await deleteData('programs', id);
+  await loadProgramsAdmin();
+  updateStats();
+  showToast('Program deleted');
+  if (window.refreshPreview) window.refreshPreview();
+}
+
+let currentEditProgramId = null;
+async function editProgram(id) {
+  const programs = await getData('programs');
+  const p = programs.find(x => x.id === id);
+  if (!p) return;
+
+  currentEditProgramId = id;
+  document.getElementById('program-title').value = p.title;
+  document.getElementById('program-description').value = p.description || '';
+  document.getElementById('program-category').value = p.category || 'current';
+  document.getElementById('program-form').scrollIntoView({ behavior: 'smooth' });
+  showToast('Editing program — update and save', 'success');
+}
+
 // ---------- Messages Management ----------
 async function loadMessagesAdmin() {
   const tbody = document.getElementById('messages-table-body');
@@ -417,14 +469,17 @@ async function updateStats() {
   const gallery = await getData('gallery');
   const events = await getData('events');
   const slides = await getData('slides');
+  const programs = await getData('programs');
 
   const g = document.getElementById('stat-gallery');
   const e = document.getElementById('stat-events');
   const s = document.getElementById('stat-slides');
+  const p = document.getElementById('stat-programs');
 
   if (g) g.textContent = gallery.length;
   if (e) e.textContent = events.length;
   if (s) s.textContent = slides.length;
+  if (p) p.textContent = programs.length;
 
   // Also update messages badge on non-messages pages
   await updateMessageStats();
@@ -445,7 +500,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Load data
   if (!isLoginPage) {
-    await Promise.all([loadGalleryAdmin(), loadEventsAdmin(), loadSlidesAdmin()]);
+    await Promise.all([loadGalleryAdmin(), loadEventsAdmin(), loadSlidesAdmin(), loadProgramsAdmin()]);
     await updateStats();
   }
 
@@ -655,6 +710,59 @@ document.addEventListener('DOMContentLoaded', async () => {
         slideImageUrl = '';
         if (slideUploadZone) slideUploadZone.innerHTML = '<div class="upload-icon">🖼️</div><h4>Upload banner image</h4><p>Recommended: 1400 x 800px landscape</p>';
         await loadSlidesAdmin();
+        await updateStats();
+        if (window.refreshPreview) window.refreshPreview();
+      } catch (err) { showToast(err.message, 'error'); }
+    });
+  }
+
+  // ---------- Program Form ----------
+  const programForm = document.getElementById('program-form');
+  if (programForm) {
+    const programFileInput = document.getElementById('program-image-file');
+    const programUploadZone = document.getElementById('program-upload-zone');
+    let programImageUrl = '';
+
+    if (programUploadZone && programFileInput) {
+      programUploadZone.addEventListener('click', () => programFileInput.click());
+      programFileInput.addEventListener('change', async () => {
+        if (programFileInput.files[0]) {
+          try {
+            programImageUrl = await uploadImage(programFileInput.files[0]);
+            programUploadZone.innerHTML = `<img src="${programImageUrl}" style="max-height:120px;border-radius:10px;margin:0 auto;">`;
+          } catch (err) { showToast(err.message, 'error'); }
+        }
+      });
+    }
+
+    programForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const title = document.getElementById('program-title').value.trim();
+      const description = document.getElementById('program-description').value.trim();
+      const category = document.getElementById('program-category').value;
+
+      if (!title || !description) { showToast('Fill in required fields', 'error'); return; }
+
+      const record = {
+        title, description, category,
+        image: programImageUrl || 'https://placehold.co/600x400/0F3D2E/FFFFFF?text=Program'
+      };
+
+      try {
+        if (currentEditProgramId) {
+          if (programImageUrl) record.image = programImageUrl;
+          else delete record.image;
+          await updateData('programs', currentEditProgramId, record);
+          currentEditProgramId = null;
+          showToast('Program updated');
+        } else {
+          await insertData('programs', record);
+          showToast('Program added');
+        }
+        programForm.reset();
+        programImageUrl = '';
+        if (programUploadZone) programUploadZone.innerHTML = '<div class="upload-icon">📷</div><h4>Upload program image</h4><p>Click or drag image here</p>';
+        await loadProgramsAdmin();
         await updateStats();
         if (window.refreshPreview) window.refreshPreview();
       } catch (err) { showToast(err.message, 'error'); }

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Events Manager – Aid Our Dreams Admin</title>
+  <title>Programs Manager – Aid Our Dreams Admin</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/admin.css">
@@ -26,7 +26,7 @@
       <a href="events.html"><span class="nav-icon">📅</span> Events</a>
       <a href="programs.html"><span class="nav-icon">📋</span> Programs</a>
       <a href="slides.html"><span class="nav-icon">🎞️</span> Slides</a>
-      <a href="messages.html"><span class="nav-icon">📩</span> Messages</a>
+      <a href="messages.html"><span class="nav-icon">📩</span> Messages<span class="badge" id="nav-messages-count">0</span></a>
     </nav>
     <div class="sidebar-bottom">
       <a href="../index.html"><span class="nav-icon">🌐</span> View Website</a>
@@ -40,76 +40,61 @@
   <main class="admin-main">
     <div class="admin-topbar">
       <div>
-        <h1>Events Manager</h1>
-        <p>Create and manage events shown on the homepage.</p>
+        <h1>Programs Manager</h1>
+        <p>Add, edit, and manage programs shown on the Programs page.</p>
       </div>
       <div class="topbar-actions">
-        <button class="preview-toggle" id="preview-toggle" data-page="events"><span class="preview-icon">👁️</span> Preview Site</button>
+        <button class="preview-toggle" id="preview-toggle" data-page="programs"><span class="preview-icon">👁️</span> Preview Site</button>
         <span class="connection-status loading" id="connection-status"><span class="dot"></span> Checking...</span>
       </div>
     </div>
 
-    <!-- Event Form -->
+    <!-- Program Form -->
     <div class="admin-card">
-      <h2>✏️ Add / Edit Event</h2>
-      <form id="event-form" style="margin-top:20px;">
+      <h2>✏️ Add / Edit Program</h2>
+      <form id="program-form" style="margin-top:20px;">
         <div class="form-row">
           <div class="form-group">
-            <label for="event-title">Event Title <span class="required">*</span></label>
-            <input type="text" id="event-title" placeholder="e.g. Annual Charity Gala" required>
+            <label for="program-title">Program Title <span class="required">*</span></label>
+            <input type="text" id="program-title" placeholder="e.g. Education Support" required>
           </div>
           <div class="form-group">
-            <label for="event-category">Category</label>
-            <select id="event-category">
-              <option value="upcoming">Upcoming</option>
-              <option value="past">Past</option>
+            <label for="program-category">Category</label>
+            <select id="program-category">
+              <option value="current">Current Program</option>
+              <option value="outreach">Outreach</option>
+              <option value="past">Past Project</option>
             </select>
           </div>
         </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label for="event-date">Date <span class="required">*</span></label>
-            <input type="text" id="event-date" placeholder="e.g. March 15, 2026" required>
-          </div>
-          <div class="form-group">
-            <label for="event-time">Time</label>
-            <input type="text" id="event-time" placeholder="e.g. 6:00 PM">
-          </div>
-        </div>
         <div class="form-row full">
           <div class="form-group">
-            <label for="event-location">Location <span class="required">*</span></label>
-            <input type="text" id="event-location" placeholder="e.g. Community Center, 123 Main St" required>
-          </div>
-        </div>
-        <div class="form-row full">
-          <div class="form-group">
-            <label for="event-description">Description</label>
-            <textarea id="event-description" rows="3" placeholder="Brief description of the event..."></textarea>
+            <label for="program-description">Description <span class="required">*</span></label>
+            <textarea id="program-description" rows="3" placeholder="Brief description of the program..." required></textarea>
           </div>
         </div>
 
         <div class="form-group">
-          <label>Event Image</label>
-          <div class="upload-zone" id="event-upload-zone" style="padding:28px;">
+          <label>Program Image</label>
+          <div class="upload-zone" id="program-upload-zone" style="padding:28px;">
             <div class="upload-icon">📷</div>
-            <h4>Upload event image</h4>
+            <h4>Upload program image</h4>
             <p>Click or drag image here</p>
           </div>
-          <input type="file" id="event-image-file" accept="image/*" hidden>
+          <input type="file" id="program-image-file" accept="image/*" hidden>
         </div>
 
         <div style="display:flex;gap:12px;margin-top:8px;">
-          <button type="submit" class="btn btn-green">Save Event</button>
-          <button type="reset" class="btn btn-outline" onclick="currentEditEventId=null;">Cancel</button>
+          <button type="submit" class="btn btn-green">Save Program</button>
+          <button type="reset" class="btn btn-outline" onclick="currentEditProgramId=null;">Cancel</button>
         </div>
       </form>
     </div>
 
-    <!-- Events Table -->
+    <!-- Programs Table -->
     <div class="admin-card">
       <div class="card-header">
-        <h2>📅 All Events <span style="font-weight:400;color:var(--text-muted);font-size:0.85rem;">(<span id="stat-events">0</span>)</span></h2>
+        <h2>📋 All Programs <span style="font-weight:400;color:var(--text-muted);font-size:0.85rem;">(<span id="stat-programs">0</span>)</span></h2>
       </div>
       <div class="table-responsive">
         <table class="admin-table">
@@ -117,13 +102,13 @@
             <tr>
               <th>Image</th>
               <th>Title</th>
-              <th>Date</th>
-              <th>Status</th>
+              <th>Category</th>
+              <th>Date Added</th>
               <th>Actions</th>
             </tr>
           </thead>
-          <tbody id="events-table-body">
-            <tr><td colspan="5"><div class="empty-state"><div class="empty-icon">📅</div><h3>No events yet</h3><p>Create your first event above.</p></div></td></tr>
+          <tbody id="programs-table-body">
+            <tr><td colspan="5"><div class="empty-state"><div class="empty-icon">📋</div><h3>No programs yet</h3><p>Add your first program using the form above.</p></div></td></tr>
           </tbody>
         </table>
       </div>
@@ -133,7 +118,7 @@
   <!-- Preview Panel -->
   <div class="preview-panel" id="preview-panel">
     <div class="preview-header">
-      <h3><span>👁️</span> Homepage Events Preview</h3>
+      <h3><span>👁️</span> Programs Preview</h3>
       <div style="display:flex;gap:8px;align-items:center;">
         <div class="preview-device-btns">
           <button class="preview-device-btn active" data-device="desktop">Desktop</button>
@@ -145,7 +130,7 @@
       </div>
     </div>
     <div class="preview-body">
-      <iframe id="preview-iframe" src="../index.html"></iframe>
+      <iframe id="preview-iframe" src="../programs.html"></iframe>
     </div>
   </div>
 

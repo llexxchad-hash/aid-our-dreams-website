@@ -45,7 +45,8 @@
         <button class="filter-btn" data-filter="past">Past Projects</button>
       </div>
 
-      <div class="grid-3" style="margin-top:20px;">
+      <div class="grid-3" style="margin-top:20px;" id="programs-grid">
+        <!-- Programs loaded dynamically from Supabase -->
         <div class="program-card fade-in" data-category="current">
           <div class="program-image">
             <img src="https://images.unsplash.com/photo-1613899484540-98f5tried80b?w=600&h=400&fit=crop" alt="Education Support Program">
@@ -161,6 +162,49 @@
     </div>
   </footer>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
   <script src="js/main.js"></script>
+  <script>
+    (async () => {
+      const grid = document.getElementById('programs-grid');
+      if (!grid) return;
+
+      try {
+        if (typeof window.supabase !== 'undefined' && typeof SUPABASE_URL !== 'undefined' && SUPABASE_URL !== 'YOUR_SUPABASE_URL') {
+          const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+          const { data, error } = await client.from('programs').select('*').order('created_at', { ascending: false });
+
+          if (!error && data && data.length > 0) {
+            const categoryLabels = { current: 'Current Program', outreach: 'Outreach', past: 'Past Project' };
+            grid.innerHTML = data.map(p => `
+              <div class="program-card fade-in" data-category="${p.category || 'current'}">
+                <div class="program-image">
+                  <img src="${escapeHtml(p.image)}" alt="${escapeHtml(p.title)}">
+                </div>
+                <div class="program-body">
+                  <span class="program-tag">${escapeHtml(categoryLabels[p.category] || p.category)}</span>
+                  <h3>${escapeHtml(p.title)}</h3>
+                  <p>${escapeHtml(p.description)}</p>
+                </div>
+              </div>
+            `).join('');
+
+            // Re-bind filter buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+              btn.addEventListener('click', () => {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                const filter = btn.dataset.filter;
+                document.querySelectorAll('.program-card').forEach(card => {
+                  card.style.display = (filter === 'all' || card.dataset.category === filter) ? '' : 'none';
+                });
+              });
+            });
+          }
+        }
+      } catch (e) { console.log('Using static programs fallback'); }
+    })();
+  </script>
 </body>
 </html>
