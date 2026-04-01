@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gallery – Aid Our Dreams</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="container">
+      <a href="index.html" class="logo"><img src="assets/images/aod_logo.PNG" alt="Aid Our Dreams"><span class="logo-text">Aid Our Dreams</span></a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="programs.html">Programs</a></li>
+        <li><a href="gallery.html" class="active">Gallery</a></li>
+        <li><a href="get-involved.html">Get Involved</a></li>
+        <li><a href="contact.html">Contact</a></li>
+        <li><a href="get-involved.html" class="btn-primary">Join Us</a></li>
+      </ul>
+      <button class="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="container">
+      <h1>Our <span>Gallery</span></h1>
+      <p>See the moments that define our journey — from school supply drives to youth mentorship and community celebrations.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="text-center fade-in">
+        <span class="section-label">Moments of Impact</span>
+        <h2 class="section-title">Photos &amp; Highlights</h2>
+        <p class="section-subtitle">Click any image to view it in full size.</p>
+      </div>
+
+      <div class="gallery-grid" style="margin-top:40px;">
+        <!-- Gallery images are loaded dynamically from the admin panel -->
+        <div class="empty-gallery-state fade-in" style="grid-column:1/-1;text-align:center;padding:60px 20px;">
+          <div style="font-size:3rem;margin-bottom:16px;">📷</div>
+          <h3 style="font-family:var(--font-heading);margin-bottom:8px;">Gallery Coming Soon</h3>
+          <p style="color:var(--body-text);">Photos from our events and programs will be added here. Check back soon!</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-banner">
+    <div class="container fade-in">
+      <h2>Want to Be Part of the Story?</h2>
+      <p>Join us at our next event and help change a young person's life.</p>
+      <a href="get-involved.html" class="btn-primary">Get Involved</a>
+    </div>
+  </section>
+
+  <!-- Gallery Modal -->
+  <div class="modal">
+    <div class="modal-content">
+      <button class="modal-close" aria-label="Close modal">&times;</button>
+      <button class="modal-nav modal-prev" aria-label="Previous">&#8249;</button>
+      <img src="" alt="Gallery Image">
+      <button class="modal-nav modal-next" aria-label="Next">&#8250;</button>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <img src="assets/images/aod_logo.PNG" alt="Aid Our Dreams" class="logo-white">
+          <h3>Empowering Youth Since 2020</h3>
+          <p>Aid Our Dreams supports children and youth through education, mentorship, and career guidance.</p>
+          <a href="get-involved.html" class="btn-primary">Get Involved</a>
+        </div>
+        <div class="footer-links">
+          <h4>Quick Links</h4>
+          <a href="index.html"><span class="link-icon">🌿</span> Home</a>
+          <a href="about.html"><span class="link-icon">🌿</span> About</a>
+          <a href="programs.html"><span class="link-icon">🌿</span> Programs</a>
+          <a href="contact.html"><span class="link-icon">🌿</span> Contact</a>
+        </div>
+        <div>
+          <h4>Socials</h4>
+          <div class="footer-social">
+            <a href="https://www.facebook.com/AidOurDreamsOrganization" aria-label="Facebook" target="_blank" rel="noopener">f</a>
+            <a href="https://www.instagram.com/aid.our.dreams?igsh=bTl5MnA2aThrdXV2" aria-label="Instagram" target="_blank" rel="noopener">📷</a>
+            <a href="mailto:aidourdreams83@gmail.com" aria-label="Email">✉</a>
+          </div>
+          <div class="footer-contact-info" style="margin-top:20px;">
+            <p>✉️ aidourdreams83@gmail.com</p>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom"><p>&copy; 2026 Aid Our Dreams. All rights reserved.</p></div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

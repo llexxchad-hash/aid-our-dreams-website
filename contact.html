@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact – Aid Our Dreams</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="container">
+      <a href="index.html" class="logo"><img src="assets/images/aod_logo.PNG" alt="Aid Our Dreams"><span class="logo-text">Aid Our Dreams</span></a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="programs.html">Programs</a></li>
+        <li><a href="gallery.html">Gallery</a></li>
+        <li><a href="get-involved.html">Get Involved</a></li>
+        <li><a href="contact.html" class="active">Contact</a></li>
+        <li><a href="get-involved.html" class="btn-primary">Join Us</a></li>
+      </ul>
+      <button class="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="container">
+      <h1>Contact <span>Us</span></h1>
+      <p>Have a question, suggestion, or want to learn more about our work? We'd love to hear from you.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="contact-grid">
+        <div class="fade-in">
+          <span class="section-label">Reach Out</span>
+          <h2 class="section-title" style="margin-bottom:32px;">Get in Touch</h2>
+
+          <div class="contact-info-card">
+            <div class="icon">✉️</div>
+            <div>
+              <h4>Email</h4>
+              <p>aidourdreams83@gmail.com</p>
+            </div>
+          </div>
+          <div class="contact-info-card">
+            <div class="icon">📍</div>
+            <div>
+              <h4>Address</h4>
+              <p>Monrovia, Liberia</p>
+            </div>
+          </div>
+          <div class="contact-info-card">
+            <div class="icon">🌐</div>
+            <div>
+              <h4>Social Media</h4>
+              <div class="footer-social" style="margin-top:8px;">
+                <a href="https://www.facebook.com/AidOurDreamsOrganization" aria-label="Facebook" target="_blank" rel="noopener">f</a>
+                <a href="https://www.instagram.com/aid.our.dreams?igsh=bTl5MnA2aThrdXV2" aria-label="Instagram" target="_blank" rel="noopener">📷</a>
+                <a href="mailto:aidourdreams83@gmail.com" aria-label="Email">✉</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="contact-form fade-in">
+          <h3>Send Us a Message</h3>
+          <form data-validate>
+            <div class="form-group">
+              <label for="contact-name">Full Name</label>
+              <input type="text" id="contact-name" name="name" placeholder="Enter your full name" required>
+              <span class="error-msg">Please enter your name.</span>
+            </div>
+            <div class="form-group">
+              <label for="contact-email">Email Address</label>
+              <input type="email" id="contact-email" name="email" placeholder="you@example.com" required>
+              <span class="error-msg">Please enter a valid email.</span>
+            </div>
+            <div class="form-group">
+              <label for="contact-subject">Subject</label>
+              <input type="text" id="contact-subject" name="subject" placeholder="What is this about?" required>
+              <span class="error-msg">Please enter a subject.</span>
+            </div>
+            <div class="form-group">
+              <label for="contact-message">Message</label>
+              <textarea id="contact-message" name="message" rows="5" placeholder="Type your message here..." required></textarea>
+              <span class="error-msg">Please enter a message.</span>
+            </div>
+            <button type="submit" class="btn-primary" style="width:100%;">Send Message</button>
+          </form>
+        </div>
+      </div>
+
+      <div class="map-container fade-in">
+        <p>📍 Map Placeholder — Embed Google Maps here</p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <img src="assets/images/aod_logo.PNG" alt="Aid Our Dreams" class="logo-white">
+          <h3>Empowering Youth Since 2020</h3>
+          <p>Aid Our Dreams supports children and youth through education, mentorship, and career guidance.</p>
+          <a href="get-involved.html" class="btn-primary">Get Involved</a>
+        </div>
+        <div class="footer-links">
+          <h4>Quick Links</h4>
+          <a href="index.html"><span class="link-icon">🌿</span> Home</a>
+          <a href="about.html"><span class="link-icon">🌿</span> About</a>
+          <a href="programs.html"><span class="link-icon">🌿</span> Programs</a>
+          <a href="contact.html"><span class="link-icon">🌿</span> Contact</a>
+        </div>
+        <div>
+          <h4>Socials</h4>
+          <div class="footer-social">
+            <a href="https://www.facebook.com/AidOurDreamsOrganization" aria-label="Facebook" target="_blank" rel="noopener">f</a>
+            <a href="https://www.instagram.com/aid.our.dreams?igsh=bTl5MnA2aThrdXV2" aria-label="Instagram" target="_blank" rel="noopener">📷</a>
+            <a href="mailto:aidourdreams83@gmail.com" aria-label="Email">✉</a>
+          </div>
+          <div class="footer-contact-info" style="margin-top:20px;">
+            <p>✉️ aidourdreams83@gmail.com</p>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom"><p>&copy; 2026 Aid Our Dreams. All rights reserved.</p></div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gallery Manager – Aid Our Dreams Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <aside class="admin-sidebar">
+    <div class="sidebar-brand">
+      <img src="../assets/images/aod_logo.PNG" alt="Aid Our Dreams">
+      <div class="sidebar-brand-text">
+        <span>Aid Our Dreams</span>
+        <small>Admin Panel</small>
+      </div>
+    </div>
+    <div class="sidebar-section-label">Main</div>
+    <nav class="sidebar-nav">
+      <a href="index.html"><span class="nav-icon">📊</span> Dashboard</a>
+      <a href="gallery.html"><span class="nav-icon">🖼️</span> Gallery</a>
+      <a href="events.html"><span class="nav-icon">📅</span> Events</a>
+      <a href="slides.html"><span class="nav-icon">🎞️</span> Slides</a>
+      <a href="messages.html"><span class="nav-icon">📩</span> Messages</a>
+    </nav>
+    <div class="sidebar-bottom">
+      <a href="../index.html"><span class="nav-icon">🌐</span> View Website</a>
+      <a href="#" onclick="logout(); return false;"><span class="nav-icon">🚪</span> Sign Out</a>
+    </div>
+  </aside>
+
+  <button class="sidebar-toggle" id="sidebar-toggle">☰</button>
+
+  <!-- Main Content -->
+  <main class="admin-main">
+    <div class="admin-topbar">
+      <div>
+        <h1>Gallery Manager</h1>
+        <p>Upload and manage images for the Gallery page.</p>
+      </div>
+      <div class="topbar-actions">
+        <button class="preview-toggle" id="preview-toggle" data-page="gallery"><span class="preview-icon">👁️</span> Preview Site</button>
+        <span class="connection-status loading" id="connection-status"><span class="dot"></span> Checking...</span>
+      </div>
+    </div>
+
+    <!-- Upload Form -->
+    <div class="admin-card">
+      <h2>📤 Upload Images</h2>
+      <form id="gallery-form" style="margin-top:20px;">
+        <div class="upload-zone" id="gallery-upload-zone">
+          <div class="upload-icon">📁</div>
+          <h4>Drop images here or <span class="browse-link">browse</span></h4>
+          <p>JPG, PNG, WEBP — Max 5MB each</p>
+        </div>
+        <input type="file" id="gallery-file" accept="image/*" multiple hidden>
+        <div class="image-preview-grid" id="gallery-preview"></div>
+
+        <hr class="form-divider">
+
+        <div class="form-group">
+          <label for="gallery-alt">Image Description</label>
+          <input type="text" id="gallery-alt" placeholder="e.g. Community outreach event 2025">
+        </div>
+        <button type="submit" class="btn btn-green">Upload to Gallery</button>
+      </form>
+    </div>
+
+    <!-- Gallery Table -->
+    <div class="admin-card">
+      <div class="card-header">
+        <h2>🖼️ All Images <span style="font-weight:400;color:var(--text-muted);font-size:0.85rem;">(<span id="stat-gallery">0</span>)</span></h2>
+      </div>
+      <div class="table-responsive">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Preview</th>
+              <th>Description</th>
+              <th>Date Added</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="gallery-table-body">
+            <tr><td colspan="4"><div class="empty-state"><div class="empty-icon">🖼️</div><h3>No images yet</h3><p>Upload your first image above.</p></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- Preview Panel -->
+  <div class="preview-panel" id="preview-panel">
+    <div class="preview-header">
+      <h3><span>👁️</span> Gallery Preview</h3>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <div class="preview-device-btns">
+          <button class="preview-device-btn active" data-device="desktop">Desktop</button>
+          <button class="preview-device-btn" data-device="tablet">Tablet</button>
+          <button class="preview-device-btn" data-device="mobile">Mobile</button>
+        </div>
+        <button class="preview-refresh" id="preview-refresh">↻ Refresh</button>
+        <button class="preview-close" id="preview-close">&times;</button>
+      </div>
+    </div>
+    <div class="preview-body">
+      <iframe id="preview-iframe" src="../gallery.html"></iframe>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

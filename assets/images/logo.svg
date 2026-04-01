@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60" width="200" height="60">
+  <!-- Leaf icon -->
+  <g transform="translate(5, 5)">
+    <path d="M20 45 C20 45 5 30 5 18 C5 8 12 2 22 2 C28 2 32 5 35 10 C32 2 38 -2 46 2 C52 5 50 15 45 22 C38 32 20 45 20 45Z" fill="#F59E0B" stroke="#0F3D2E" stroke-width="1.5"/>
+    <path d="M20 45 C20 45 20 25 25 12" fill="none" stroke="#0F3D2E" stroke-width="1.5"/>
+    <path d="M20 30 C20 30 14 22 10 20" fill="none" stroke="#0F3D2E" stroke-width="1"/>
+    <path d="M22 22 C22 22 28 16 32 15" fill="none" stroke="#0F3D2E" stroke-width="1"/>
+  </g>
+  <!-- Text -->
+  <text x="55" y="38" font-family="'Georgia', serif" font-style="italic" font-size="26" font-weight="bold" fill="#0F3D2E">Aid Our Dreams</text>
+</svg>

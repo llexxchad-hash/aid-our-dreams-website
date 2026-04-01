@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Slides Manager – Aid Our Dreams Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <aside class="admin-sidebar">
+    <div class="sidebar-brand">
+      <img src="../assets/images/aod_logo.PNG" alt="Aid Our Dreams">
+      <div class="sidebar-brand-text">
+        <span>Aid Our Dreams</span>
+        <small>Admin Panel</small>
+      </div>
+    </div>
+    <div class="sidebar-section-label">Main</div>
+    <nav class="sidebar-nav">
+      <a href="index.html"><span class="nav-icon">📊</span> Dashboard</a>
+      <a href="gallery.html"><span class="nav-icon">🖼️</span> Gallery</a>
+      <a href="events.html"><span class="nav-icon">📅</span> Events</a>
+      <a href="slides.html"><span class="nav-icon">🎞️</span> Slides</a>
+      <a href="messages.html"><span class="nav-icon">📩</span> Messages</a>
+    </nav>
+    <div class="sidebar-bottom">
+      <a href="../index.html"><span class="nav-icon">🌐</span> View Website</a>
+      <a href="#" onclick="logout(); return false;"><span class="nav-icon">🚪</span> Sign Out</a>
+    </div>
+  </aside>
+
+  <button class="sidebar-toggle" id="sidebar-toggle">☰</button>
+
+  <!-- Main Content -->
+  <main class="admin-main">
+    <div class="admin-topbar">
+      <div>
+        <h1>Banner Slides</h1>
+        <p>Manage the hero slideshow banners on the homepage.</p>
+      </div>
+      <div class="topbar-actions">
+        <button class="preview-toggle" id="preview-toggle" data-page="slides"><span class="preview-icon">👁️</span> Preview Site</button>
+        <span class="connection-status loading" id="connection-status"><span class="dot"></span> Checking...</span>
+      </div>
+    </div>
+
+    <!-- Slide Form -->
+    <div class="admin-card">
+      <h2>✏️ Add / Edit Slide</h2>
+      <form id="slide-form" style="margin-top:20px;">
+        <div class="form-row full">
+          <div class="form-group">
+            <label for="slide-title">Slide Title <span class="required">*</span></label>
+            <input type="text" id="slide-title" placeholder="e.g. Annual Fundraiser 2026" required>
+          </div>
+        </div>
+        <div class="form-row full">
+          <div class="form-group">
+            <label for="slide-description">Description</label>
+            <textarea id="slide-description" rows="2" placeholder="Brief description shown on the banner overlay..."></textarea>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="slide-date">Date</label>
+            <input type="text" id="slide-date" placeholder="e.g. April 20, 2026">
+          </div>
+          <div class="form-group">
+            <label for="slide-time">Time</label>
+            <input type="text" id="slide-time" placeholder="e.g. 6:00 PM">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="slide-location">Location</label>
+            <input type="text" id="slide-location" placeholder="e.g. New York, NY">
+          </div>
+          <div class="form-group">
+            <label for="slide-link">Link URL</label>
+            <input type="text" id="slide-link" placeholder="e.g. get-involved.html">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Banner Image</label>
+          <div class="upload-zone" id="slide-upload-zone" style="padding:28px;">
+            <div class="upload-icon">🖼️</div>
+            <h4>Upload banner image</h4>
+            <p>Recommended: 1400 x 800px landscape</p>
+          </div>
+          <input type="file" id="slide-image-file" accept="image/*" hidden>
+        </div>
+
+        <div style="display:flex;gap:12px;margin-top:8px;">
+          <button type="submit" class="btn btn-green">Save Slide</button>
+          <button type="reset" class="btn btn-outline" onclick="currentEditSlideId=null;">Cancel</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Slides Table -->
+    <div class="admin-card">
+      <div class="card-header">
+        <h2>🎞️ All Slides <span style="font-weight:400;color:var(--text-muted);font-size:0.85rem;">(<span id="stat-slides">0</span>)</span></h2>
+      </div>
+      <div class="table-responsive">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Image</th>
+              <th>Title / Description</th>
+              <th>Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="slides-table-body">
+            <tr><td colspan="4"><div class="empty-state"><div class="empty-icon">🎞️</div><h3>No slides yet</h3><p>Add your first banner slide above.</p></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- Preview Panel -->
+  <div class="preview-panel" id="preview-panel">
+    <div class="preview-header">
+      <h3><span>👁️</span> Homepage Slideshow Preview</h3>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <div class="preview-device-btns">
+          <button class="preview-device-btn active" data-device="desktop">Desktop</button>
+          <button class="preview-device-btn" data-device="tablet">Tablet</button>
+          <button class="preview-device-btn" data-device="mobile">Mobile</button>
+        </div>
+        <button class="preview-refresh" id="preview-refresh">↻ Refresh</button>
+        <button class="preview-close" id="preview-close">&times;</button>
+      </div>
+    </div>
+    <div class="preview-body">
+      <iframe id="preview-iframe" src="../index.html"></iframe>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

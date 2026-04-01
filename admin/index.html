@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard – Aid Our Dreams Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <aside class="admin-sidebar">
+    <div class="sidebar-brand">
+      <img src="../assets/images/aod_logo.PNG" alt="Aid Our Dreams">
+      <div class="sidebar-brand-text">
+        <span>Aid Our Dreams</span>
+        <small>Admin Panel</small>
+      </div>
+    </div>
+
+    <div class="sidebar-section-label">Main</div>
+    <nav class="sidebar-nav">
+      <a href="index.html">
+        <span class="nav-icon">📊</span> Dashboard
+      </a>
+      <a href="gallery.html">
+        <span class="nav-icon">🖼️</span> Gallery
+        <span class="badge" id="nav-gallery-count">0</span>
+      </a>
+      <a href="events.html">
+        <span class="nav-icon">📅</span> Events
+        <span class="badge" id="nav-events-count">0</span>
+      </a>
+      <a href="slides.html">
+        <span class="nav-icon">🎞️</span> Slides
+      </a>
+      <a href="messages.html">
+        <span class="nav-icon">📩</span> Messages
+        <span class="badge" id="nav-messages-count">0</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <a href="../index.html"><span class="nav-icon">🌐</span> View Website</a>
+      <a href="#" onclick="logout(); return false;"><span class="nav-icon">🚪</span> Sign Out</a>
+    </div>
+  </aside>
+
+  <!-- Mobile toggle -->
+  <button class="sidebar-toggle" id="sidebar-toggle">☰</button>
+
+  <!-- Main Content -->
+  <main class="admin-main">
+    <div class="admin-topbar">
+      <div>
+        <h1>Dashboard</h1>
+        <p>Welcome back! Here's your content overview.</p>
+      </div>
+      <div class="topbar-actions">
+        <button class="preview-toggle" id="preview-toggle" data-page="home"><span class="preview-icon">👁️</span> Preview Site</button>
+        <span class="connection-status loading" id="connection-status">
+          <span class="dot"></span> Checking...
+        </span>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon green">🖼️</div>
+        <div class="stat-info">
+          <span class="stat-value" id="stat-gallery">0</span>
+          <span class="stat-label">Gallery Images</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon gold">📅</div>
+        <div class="stat-info">
+          <span class="stat-value" id="stat-events">0</span>
+          <span class="stat-label">Events</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon blue">🎞️</div>
+        <div class="stat-info">
+          <span class="stat-value" id="stat-slides">0</span>
+          <span class="stat-label">Banner Slides</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon purple">�</div>
+        <div class="stat-info">
+          <span class="stat-value" id="stat-messages-dash">0</span>
+          <span class="stat-label">Messages</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="admin-card">
+      <h2>⚡ Quick Actions</h2>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:20px;">
+        <a href="gallery.html" class="btn btn-green">Upload Images</a>
+        <a href="events.html" class="btn btn-gold">Create Event</a>
+        <a href="slides.html" class="btn btn-outline">Add Banner Slide</a>
+        <a href="messages.html" class="btn btn-outline">View Messages</a>
+      </div>
+    </div>
+
+    <!-- Recent Gallery -->
+    <div class="admin-card">
+      <div class="card-header">
+        <h2>🖼️ Recent Gallery</h2>
+        <a href="gallery.html" class="see-all">View All →</a>
+      </div>
+      <div class="recent-grid" id="recent-gallery"></div>
+    </div>
+
+    <!-- Recent Events -->
+    <div class="admin-card">
+      <div class="card-header">
+        <h2>📅 Recent Events</h2>
+        <a href="events.html" class="see-all">View All →</a>
+      </div>
+      <div id="recent-events"></div>
+    </div>
+
+    <!-- Account Settings -->
+    <div class="admin-card">
+      <h2>🔒 Change Password</h2>
+      <p style="color:#777;margin:8px 0 20px;">Update your admin account password.</p>
+      <form id="change-password-form" style="max-width:400px;">
+        <div class="form-group" style="margin-bottom:16px;">
+          <label for="new-password" style="display:block;font-weight:600;margin-bottom:6px;font-size:0.9rem;">New Password</label>
+          <input type="password" id="new-password" placeholder="Enter new password" required minlength="6" style="width:100%;padding:10px 14px;border:1px solid #ddd;border-radius:8px;font-size:0.95rem;">
+        </div>
+        <div class="form-group" style="margin-bottom:20px;">
+          <label for="confirm-password" style="display:block;font-weight:600;margin-bottom:6px;font-size:0.9rem;">Confirm Password</label>
+          <input type="password" id="confirm-password" placeholder="Confirm new password" required minlength="6" style="width:100%;padding:10px 14px;border:1px solid #ddd;border-radius:8px;font-size:0.95rem;">
+        </div>
+        <button type="submit" class="btn btn-green">Update Password</button>
+      </form>
+    </div>
+  </main>
+
+  <!-- Preview Panel -->
+  <div class="preview-panel" id="preview-panel">
+    <div class="preview-header">
+      <h3><span>👁️</span> Live Site Preview</h3>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <div class="preview-device-btns">
+          <button class="preview-device-btn active" data-device="desktop">Desktop</button>
+          <button class="preview-device-btn" data-device="tablet">Tablet</button>
+          <button class="preview-device-btn" data-device="mobile">Mobile</button>
+        </div>
+        <button class="preview-refresh" id="preview-refresh">↻ Refresh</button>
+        <button class="preview-close" id="preview-close">&times;</button>
+      </div>
+    </div>
+    <div class="preview-body">
+      <iframe id="preview-iframe" src="../index.html"></iframe>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/admin.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Wait a tick for admin.js init
+      await new Promise(r => setTimeout(r, 300));
+
+      const recentGallery = document.getElementById('recent-gallery');
+      const gallery = await getData('gallery');
+      const recent6 = gallery.slice(0, 6);
+      if (recent6.length === 0) {
+        recentGallery.innerHTML = '<div class="empty-state" style="padding:32px;"><div class="empty-icon">🖼️</div><h3>No images yet</h3><p><a href="gallery.html" style="color:var(--green-light);font-weight:600;">Upload your first image</a></p></div>';
+      } else {
+        recentGallery.innerHTML = recent6.map(img =>
+          `<img src="${escapeHtml(img.src)}" alt="${escapeHtml(img.alt || '')}">`
+        ).join('');
+      }
+
+      const recentEvents = document.getElementById('recent-events');
+      const events = await getData('events');
+      const recent4 = events.slice(0, 4);
+      if (recent4.length === 0) {
+        recentEvents.innerHTML = '<div class="empty-state" style="padding:32px;"><div class="empty-icon">📅</div><h3>No events yet</h3><p><a href="events.html" style="color:var(--green-light);font-weight:600;">Create your first event</a></p></div>';
+      } else {
+        recentEvents.innerHTML = recent4.map(ev =>
+          `<div class="recent-event-item">
+            <img src="${escapeHtml(ev.image)}" alt="">
+            <div class="recent-event-info">
+              <strong>${escapeHtml(ev.title)}</strong>
+              <small>${escapeHtml(ev.date)} · ${escapeHtml(ev.location)}</small>
+            </div>
+          </div>`
+        ).join('');
+      }
+
+      // Nav badges
+      document.getElementById('nav-gallery-count').textContent = gallery.length;
+      document.getElementById('nav-events-count').textContent = events.length;
+
+      // Messages dashboard stat
+      const messages = await getData('messages');
+      const volunteers = await getData('volunteers');
+      const totalSubmissions = messages.length + volunteers.length;
+      const dashMsgEl = document.getElementById('stat-messages-dash');
+      if (dashMsgEl) dashMsgEl.textContent = totalSubmissions;
+
+      // Update nav messages badge
+      await updateMessageStats();
+
+      // Change password form
+      const pwForm = document.getElementById('change-password-form');
+      if (pwForm) {
+        pwForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const newPw = document.getElementById('new-password').value;
+          const confirmPw = document.getElementById('confirm-password').value;
+          if (newPw.length < 6) { showToast('Password must be at least 6 characters', 'error'); return; }
+          if (newPw !== confirmPw) { showToast('Passwords do not match', 'error'); return; }
+          const btn = pwForm.querySelector('button[type="submit"]');
+          btn.disabled = true;
+          btn.textContent = 'Updating...';
+          try {
+            await changePassword(newPw);
+            showToast('Password updated successfully');
+            pwForm.reset();
+          } catch (err) {
+            showToast(err.message, 'error');
+          }
+          btn.disabled = false;
+          btn.textContent = 'Update Password';
+        });
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Messages – Aid Our Dreams Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <aside class="admin-sidebar">
+    <div class="sidebar-brand">
+      <img src="../assets/images/aod_logo.PNG" alt="Aid Our Dreams">
+      <div class="sidebar-brand-text">
+        <span>Aid Our Dreams</span>
+        <small>Admin Panel</small>
+      </div>
+    </div>
+    <div class="sidebar-section-label">Main</div>
+    <nav class="sidebar-nav">
+      <a href="index.html"><span class="nav-icon">📊</span> Dashboard</a>
+      <a href="gallery.html"><span class="nav-icon">🖼️</span> Gallery</a>
+      <a href="events.html"><span class="nav-icon">📅</span> Events</a>
+      <a href="slides.html"><span class="nav-icon">🎞️</span> Slides</a>
+      <a href="messages.html"><span class="nav-icon">📩</span> Messages</a>
+    </nav>
+    <div class="sidebar-bottom">
+      <a href="../index.html"><span class="nav-icon">🌐</span> View Website</a>
+      <a href="#" onclick="logout(); return false;"><span class="nav-icon">🚪</span> Sign Out</a>
+    </div>
+  </aside>
+
+  <!-- Mobile toggle -->
+  <button class="sidebar-toggle" id="sidebar-toggle">☰</button>
+
+  <!-- Main Content -->
+  <main class="admin-main">
+    <div class="admin-topbar">
+      <div>
+        <h1>Messages & Applications</h1>
+        <p>View contact messages and volunteer applications from the website.</p>
+      </div>
+      <div class="topbar-actions">
+        <span class="connection-status loading" id="connection-status"><span class="dot"></span> Checking...</span>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon blue">📩</div>
+        <div class="stat-info">
+          <span class="stat-value" id="stat-messages">0</span>
+          <span class="stat-label">Contact Messages</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon green">🙋</div>
+        <div class="stat-info">
+          <span class="stat-value" id="stat-volunteers">0</span>
+          <span class="stat-label">Volunteer Applications</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon gold">🆕</div>
+        <div class="stat-info">
+          <span class="stat-value" id="stat-unread">0</span>
+          <span class="stat-label">Unread / New</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contact Messages -->
+    <div class="admin-card">
+      <div class="card-header">
+        <h2>📩 Contact Messages <span style="font-weight:400;color:var(--text-muted);font-size:0.85rem;">(<span id="messages-count">0</span>)</span></h2>
+      </div>
+      <div class="table-responsive">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Status</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Subject</th>
+              <th>Message</th>
+              <th>Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="messages-table-body">
+            <tr><td colspan="7"><div class="empty-state"><div class="empty-icon">📩</div><h3>No messages yet</h3><p>Contact form submissions will appear here.</p></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Volunteer Applications -->
+    <div class="admin-card">
+      <div class="card-header">
+        <h2>🙋 Volunteer Applications <span style="font-weight:400;color:var(--text-muted);font-size:0.85rem;">(<span id="volunteers-count">0</span>)</span></h2>
+      </div>
+      <div class="table-responsive">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Status</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Interest</th>
+              <th>Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="volunteers-table-body">
+            <tr><td colspan="7"><div class="empty-state"><div class="empty-icon">🙋</div><h3>No applications yet</h3><p>Volunteer form submissions will appear here.</p></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/admin.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      await new Promise(r => setTimeout(r, 300));
+      await loadMessagesAdmin();
+      await loadVolunteersAdmin();
+      updateMessageStats();
+    });
+  </script>
+</body>
+</html>
