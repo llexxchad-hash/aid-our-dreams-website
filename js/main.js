@@ -249,7 +249,7 @@ async function loadDynamicContent() {
         <img src="${escapeHtml(item.src)}" alt="${escapeHtml(item.alt)}" loading="lazy">
         <div class="gallery-overlay">
           <span>🔍</span>
-          <a class="download-btn" href="${escapeHtml(item.src)}" download title="Download" onclick="event.stopPropagation()">⬇</a>
+          <button class="download-btn" title="Download" onclick="event.stopPropagation();downloadImage('${escapeHtml(item.src)}','${escapeHtml(item.alt || 'gallery-image')}')">⬇</button>
         </div>
       `;
       galleryGrid.appendChild(div);
@@ -345,15 +345,31 @@ function rebindGalleryModal() {
   const images = Array.from(galleryItems);
   let idx = 0;
 
-  function updateDownload(src) { if(modalDownload) modalDownload.href = src; }
-  function open(i) { idx = i; const img = images[idx].querySelector('img'); if(img){modalImg.src=img.src;modalImg.alt=img.alt;updateDownload(img.src);} modal.classList.add('active'); document.body.style.overflow='hidden'; }
+  let currentSrc = '';
+  function open(i) { idx = i; const img = images[idx].querySelector('img'); if(img){modalImg.src=img.src;modalImg.alt=img.alt;currentSrc=img.src;} modal.classList.add('active'); document.body.style.overflow='hidden'; }
   function close() { modal.classList.remove('active'); document.body.style.overflow=''; }
-  function nav(d) { idx=(idx+d+images.length)%images.length; const img=images[idx].querySelector('img'); if(img){modalImg.src=img.src;modalImg.alt=img.alt;updateDownload(img.src);} }
+  function nav(d) { idx=(idx+d+images.length)%images.length; const img=images[idx].querySelector('img'); if(img){modalImg.src=img.src;modalImg.alt=img.alt;currentSrc=img.src;} }
 
   galleryItems.forEach((item,i) => item.addEventListener('click', () => open(i)));
   modalClose.addEventListener('click', close);
   if(modalPrev) modalPrev.addEventListener('click', () => nav(-1));
   if(modalNext) modalNext.addEventListener('click', () => nav(1));
+  if(modalDownload) modalDownload.addEventListener('click', (e) => { e.preventDefault(); downloadImage(currentSrc, modalImg.alt || 'gallery-image'); });
+}
+
+async function downloadImage(url, name) {
+  try {
+    const res = await fetch(url);
+    const blob = await res.blob();
+    const ext = blob.type.split('/')[1] || 'jpg';
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = (name || 'image').replace(/[^a-zA-Z0-9_-]/g, '_') + '.' + ext;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(a.href);
+  } catch (e) { window.open(url, '_blank'); }
 }
 
 function escapeHtml(str) {
