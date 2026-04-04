@@ -189,32 +189,48 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // ---------- Filter Buttons (Programs & Events) ----------
-  document.querySelectorAll('.filter-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const parent = btn.closest('.programs-filter, .events-filter');
-      if (!parent) return;
-      parent.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
+  function bindFilterButtons() {
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const parent = btn.closest('.programs-filter, .events-filter');
+        if (!parent) return;
+        parent.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
 
-      const filter = btn.dataset.filter;
-      const cards = document.querySelectorAll('.program-card, .event-card[data-category]');
-      cards.forEach(card => {
-        card.style.display = (filter === 'all' || card.dataset.category === filter) ? '' : 'none';
-      });
-    });
-  });
-
-  // ---------- Event Search ----------
-  const searchInput = document.querySelector('.search-bar input');
-  if (searchInput) {
-    searchInput.addEventListener('input', () => {
-      const term = searchInput.value.toLowerCase();
-      document.querySelectorAll('.event-card').forEach(card => {
-        const text = card.textContent.toLowerCase();
-        card.style.display = text.includes(term) ? '' : 'none';
+        const filter = btn.dataset.filter;
+        const isEventFilter = !!parent.classList.contains('events-filter');
+        const cards = isEventFilter
+          ? document.querySelectorAll('.events-grid .event-card')
+          : document.querySelectorAll('.program-card[data-category]');
+        cards.forEach(card => {
+          card.style.display = (filter === 'all' || card.dataset.category === filter) ? '' : 'none';
+        });
       });
     });
   }
+  bindFilterButtons();
+
+  // ---------- Event Search ----------
+  function bindSearchBar() {
+    const searchInput = document.querySelector('.search-bar input');
+    if (searchInput) {
+      searchInput.addEventListener('input', () => {
+        const term = searchInput.value.toLowerCase();
+        document.querySelectorAll('.events-grid .event-card').forEach(card => {
+          const text = card.textContent.toLowerCase();
+          card.style.display = text.includes(term) ? '' : 'none';
+        });
+        // Reset active filter to 'All' when searching
+        const filterParent = document.querySelector('.events-filter');
+        if (filterParent) {
+          filterParent.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+          const allBtn = filterParent.querySelector('[data-filter="all"]');
+          if (allBtn) allBtn.classList.add('active');
+        }
+      });
+    }
+  }
+  bindSearchBar();
 
   // ---------- Active Nav Link ----------
   const currentPage = window.location.pathname.split('/').pop() || 'index.html';
@@ -265,6 +281,10 @@ async function loadDynamicContent() {
       const card = document.createElement('div');
       card.className = 'event-card fade-in visible';
       card.dataset.category = ev.category || 'all';
+      const descHtml = ev.description ? `<div class="event-details" style="display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--border-light);">
+          ${ev.time ? `<p style="font-size:0.88rem;color:var(--body-text);margin-bottom:6px;"><span class="meta-icon">🕐</span> ${escapeHtml(ev.time)}</p>` : ''}
+          <p style="font-size:0.9rem;color:var(--body-text);line-height:1.7;">${escapeHtml(ev.description)}</p>
+        </div>` : '';
       card.innerHTML = `
         <div class="event-image">
           <img src="${escapeHtml(ev.image)}" alt="${escapeHtml(ev.title)}" loading="lazy">
@@ -275,10 +295,24 @@ async function loadDynamicContent() {
             <span><span class="meta-icon">📅</span> ${escapeHtml(ev.date)}</span>
             <span><span class="meta-icon">📍</span> ${escapeHtml(ev.location)}</span>
           </div>
-          <a href="#" class="btn-primary btn-sm">Learn More</a>
+          ${descHtml}
+          <button class="btn-primary btn-sm event-learn-more" style="margin-top:12px;border:none;cursor:pointer;">Learn More</button>
         </div>
       `;
       eventsGrid.appendChild(card);
+    });
+
+    // Bind Learn More toggle
+    eventsGrid.querySelectorAll('.event-learn-more').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const details = btn.parentElement.querySelector('.event-details');
+        if (details) {
+          const isOpen = details.style.display !== 'none';
+          details.style.display = isOpen ? 'none' : 'block';
+          btn.textContent = isOpen ? 'Learn More' : 'Show Less';
+        }
+      });
     });
   }
 
