@@ -267,6 +267,18 @@ section { padding:80px 0; }
 }
 .footer-social a:hover { background:var(--gold); transform:translateY(-2px); }
 .footer-social svg { width:18px; height:18px; fill:currentColor; }
+
+/* Social icons on light backgrounds */
+.contact-info-card .footer-social a,
+.involve-info .footer-social a,
+.card .footer-social a {
+  background:rgba(15,61,46,0.1); color:var(--deep-green);
+}
+.contact-info-card .footer-social a:hover,
+.involve-info .footer-social a:hover,
+.card .footer-social a:hover {
+  background:var(--gold); color:var(--white);
+}
 .footer-bottom { border-top:1px solid rgba(255,255,255,0.12); padding-top:24px; text-align:center; font-size:0.82rem; opacity:0.7; }
 
 /* ---------- About Page ---------- */
