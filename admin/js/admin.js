@@ -379,6 +379,7 @@ async function loadMessagesAdmin() {
       <td title="${escapeHtml(m.message)}">${escapeHtml((m.message || '').substring(0, 60))}${(m.message || '').length > 60 ? '...' : ''}</td>
       <td>${m.created_at ? new Date(m.created_at).toLocaleDateString() : 'N/A'}</td>
       <td class="actions">
+        <button class="btn btn-outline btn-sm" onclick="viewFullMessage('message', '${m.id}')">View</button>
         ${m.status === 'unread' ? `<button class="btn btn-outline btn-sm" onclick="markMessageRead('${m.id}')">Mark Read</button>` : ''}
         <button class="btn btn-danger btn-sm" onclick="deleteMessage('${m.id}')">Delete</button>
       </td>
@@ -399,6 +400,71 @@ async function deleteMessage(id) {
   await loadMessagesAdmin();
   updateMessageStats();
   showToast('Message deleted');
+}
+
+// ---------- View Full Details Modal ----------
+async function viewFullMessage(type, id) {
+  const data = await getData(type === 'message' ? 'messages' : type === 'volunteer' ? 'volunteers' : 'partnerships');
+  const item = data.find(d => d.id === id);
+  if (!item) return;
+
+  let html = '';
+  if (type === 'message') {
+    html = `
+      <p><strong>From:</strong> ${escapeHtml(item.name)}</p>
+      <p><strong>Email:</strong> <a href="mailto:${escapeHtml(item.email)}">${escapeHtml(item.email)}</a></p>
+      <p><strong>Subject:</strong> ${escapeHtml(item.subject)}</p>
+      <p><strong>Date:</strong> ${item.created_at ? new Date(item.created_at).toLocaleString() : 'N/A'}</p>
+      <hr style="margin:16px 0;border:none;border-top:1px solid #eee;">
+      <p><strong>Message:</strong></p>
+      <div style="background:#f9f9f9;padding:16px;border-radius:8px;white-space:pre-wrap;line-height:1.7;font-size:0.95rem;">${escapeHtml(item.message || 'No message')}</div>
+    `;
+  } else if (type === 'volunteer') {
+    html = `
+      <p><strong>Name:</strong> ${escapeHtml(item.name)}</p>
+      <p><strong>Email:</strong> <a href="mailto:${escapeHtml(item.email)}">${escapeHtml(item.email)}</a></p>
+      <p><strong>Phone:</strong> ${escapeHtml(item.phone || 'N/A')}</p>
+      <p><strong>Interest:</strong> ${escapeHtml(item.interest || 'N/A')}</p>
+      <p><strong>Status:</strong> ${escapeHtml(item.status)}</p>
+      <p><strong>Date:</strong> ${item.created_at ? new Date(item.created_at).toLocaleString() : 'N/A'}</p>
+    `;
+  } else if (type === 'partnership') {
+    html = `
+      <p><strong>Organization:</strong> ${escapeHtml(item.org_name)}</p>
+      <p><strong>Contact Person:</strong> ${escapeHtml(item.contact_name)}</p>
+      <p><strong>Email:</strong> <a href="mailto:${escapeHtml(item.email)}">${escapeHtml(item.email)}</a></p>
+      <p><strong>Phone:</strong> ${escapeHtml(item.phone || 'N/A')}</p>
+      <p><strong>Partnership Type:</strong> ${escapeHtml(item.org_type || 'N/A')}</p>
+      <p><strong>Date:</strong> ${item.created_at ? new Date(item.created_at).toLocaleString() : 'N/A'}</p>
+      <hr style="margin:16px 0;border:none;border-top:1px solid #eee;">
+      <p><strong>Message:</strong></p>
+      <div style="background:#f9f9f9;padding:16px;border-radius:8px;white-space:pre-wrap;line-height:1.7;font-size:0.95rem;">${escapeHtml(item.message || 'No message')}</div>
+    `;
+  }
+
+  // Remove existing modal if any
+  const existing = document.getElementById('detail-modal');
+  if (existing) existing.remove();
+
+  const modal = document.createElement('div');
+  modal.id = 'detail-modal';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;';
+  modal.innerHTML = `
+    <div style="background:#fff;border-radius:16px;max-width:600px;width:100%;max-height:80vh;overflow-y:auto;padding:32px;position:relative;box-shadow:0 20px 60px rgba(0,0,0,0.2);">
+      <button onclick="document.getElementById('detail-modal').remove()" style="position:absolute;top:16px;right:16px;background:none;border:none;font-size:1.5rem;cursor:pointer;color:#999;">&times;</button>
+      <h2 style="margin-bottom:20px;font-size:1.3rem;color:#1a1a1a;">${type === 'message' ? '📩 Message Details' : type === 'volunteer' ? '🙋 Volunteer Details' : '🤝 Partnership Details'}</h2>
+      ${html}
+    </div>
+  `;
+  modal.addEventListener('click', (e) => { if (e.target === modal) modal.remove(); });
+  document.body.appendChild(modal);
+
+  // Auto mark as read if unread
+  if (type === 'message' && item.status === 'unread') {
+    await updateData('messages', id, { status: 'read' });
+    await loadMessagesAdmin();
+    updateMessageStats();
+  }
 }
 
 // ---------- Volunteers Management ----------
@@ -426,6 +492,7 @@ async function loadVolunteersAdmin() {
       <td>${escapeHtml(v.interest || 'N/A')}</td>
       <td>${v.created_at ? new Date(v.created_at).toLocaleDateString() : 'N/A'}</td>
       <td class="actions">
+        <button class="btn btn-outline btn-sm" onclick="viewFullMessage('volunteer', '${v.id}')">View</button>
         ${v.status === 'new' ? `<button class="btn btn-outline btn-sm" onclick="markVolunteerReviewed('${v.id}')">Reviewed</button>` : ''}
         <button class="btn btn-danger btn-sm" onclick="deleteVolunteer('${v.id}')">Delete</button>
       </td>
@@ -475,6 +542,7 @@ async function loadPartnershipsAdmin() {
       <td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${escapeHtml(p.message || '')}">${escapeHtml(p.message || 'N/A')}</td>
       <td>${p.created_at ? new Date(p.created_at).toLocaleDateString() : 'N/A'}</td>
       <td class="actions">
+        <button class="btn btn-outline btn-sm" onclick="viewFullMessage('partnership', '${p.id}')">View</button>
         ${p.status === 'new' ? `<button class="btn btn-outline btn-sm" onclick="markPartnershipReviewed('${p.id}')">Reviewed</button>` : ''}
         <button class="btn btn-danger btn-sm" onclick="deletePartnership('${p.id}')">Delete</button>
       </td>
@@ -531,6 +599,23 @@ async function updateStats() {
   if (e) e.textContent = events.length;
   if (s) s.textContent = slides.length;
   if (p) p.textContent = programs.length;
+
+  // Load ratings for dashboard
+  const ratings = await getData('ratings');
+  const ratingAvgEl = document.getElementById('stat-rating-avg');
+  const ratingCountEl = document.getElementById('stat-rating-count');
+  if (ratingAvgEl && ratings.length > 0) {
+    const avg = (ratings.reduce((sum, r) => sum + r.rating, 0) / ratings.length).toFixed(1);
+    ratingAvgEl.textContent = avg + '/5';
+  } else if (ratingAvgEl) {
+    ratingAvgEl.textContent = '—';
+  }
+  if (ratingCountEl) ratingCountEl.textContent = ratings.length;
+
+  // Dashboard messages count
+  const messages = await getData('messages');
+  const msgDash = document.getElementById('stat-messages-dash');
+  if (msgDash) msgDash.textContent = messages.length;
 
   // Also update messages badge on non-messages pages
   await updateMessageStats();
