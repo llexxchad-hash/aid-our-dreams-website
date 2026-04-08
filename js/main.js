@@ -1,8 +1,38 @@
 /* ============================================
-   AID OUR DREAMS – JavaScript v2.0
+   AID OUR DREAMS – JavaScript v3.0
+   Premium GSAP + Lenis powered
    ============================================ */
 
 document.addEventListener('DOMContentLoaded', () => {
+
+  // ---------- Lenis Smooth Scroll ----------
+  let lenis;
+  if (typeof Lenis !== 'undefined') {
+    lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      smoothWheel: true,
+      touchMultiplier: 1.5,
+    });
+    function raf(time) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+    requestAnimationFrame(raf);
+    // Connect Lenis to GSAP ScrollTrigger
+    if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+      lenis.on('scroll', ScrollTrigger.update);
+      gsap.ticker.add((time) => lenis.raf(time * 1000));
+      gsap.ticker.lagSmoothing(0);
+    }
+  }
+
+  // ---------- GSAP Setup ----------
+  const hasGSAP = typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined';
+  if (hasGSAP) {
+    gsap.registerPlugin(ScrollTrigger);
+    document.documentElement.classList.add('gsap-ready');
+  }
 
   // ---------- Mobile Menu ----------
   const hamburger = document.querySelector('.hamburger');
@@ -27,11 +57,20 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // ---------- Navbar scroll effect ----------
+  // ---------- Navbar scroll effects ----------
   const navbar = document.querySelector('.navbar');
+  let lastScroll = 0;
   if (navbar) {
     window.addEventListener('scroll', () => {
-      navbar.classList.toggle('scrolled', window.scrollY > 30);
+      const y = window.scrollY;
+      navbar.classList.toggle('scrolled', y > 30);
+      // Hide/show navbar on scroll direction (only after scrolling past hero)
+      if (y > 400) {
+        navbar.classList.toggle('nav-hidden', y > lastScroll && y - lastScroll > 5);
+      } else {
+        navbar.classList.remove('nav-hidden');
+      }
+      lastScroll = y;
     });
   }
 
@@ -47,6 +86,17 @@ document.addEventListener('DOMContentLoaded', () => {
     currentSlide = index;
     if (slides[currentSlide]) slides[currentSlide].classList.add('active');
     if (dots[currentSlide]) dots[currentSlide].classList.add('active');
+
+    // Animate new slide content with GSAP
+    if (hasGSAP && slides[currentSlide]) {
+      const content = slides[currentSlide].querySelector('.slide-content');
+      if (content) {
+        gsap.fromTo(content.children,
+          { opacity: 0, y: 40 },
+          { opacity: 1, y: 0, duration: 0.8, stagger: 0.15, ease: 'power3.out', delay: 0.2 }
+        );
+      }
+    }
   }
 
   function nextSlide() {
@@ -59,33 +109,175 @@ document.addEventListener('DOMContentLoaded', () => {
     dots = document.querySelectorAll('.slide-dot');
     currentSlide = 0;
     if (slides.length > 1) {
-      slideInterval = setInterval(nextSlide, 5000);
+      slideInterval = setInterval(nextSlide, 5500);
       dots.forEach((dot, i) => {
         dot.addEventListener('click', () => {
           clearInterval(slideInterval);
           goToSlide(i);
-          slideInterval = setInterval(nextSlide, 5000);
+          slideInterval = setInterval(nextSlide, 5500);
         });
       });
     }
+    // Animate first slide
+    if (hasGSAP && slides[0]) {
+      const content = slides[0].querySelector('.slide-content');
+      if (content) {
+        gsap.fromTo(content.children,
+          { opacity: 0, y: 50 },
+          { opacity: 1, y: 0, duration: 1, stagger: 0.2, ease: 'power3.out', delay: 0.4 }
+        );
+      }
+    }
   }
 
-  // Expose globally so loadDynamicContent can reinit after fetching slides
   window.initSlideshow = initSlideshow;
-
   initSlideshow();
 
-  // ---------- Scroll Animations ----------
-  const fadeElements = document.querySelectorAll('.fade-in');
-  const fadeObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-        fadeObserver.unobserve(entry.target);
+  // ---------- Hero Parallax ----------
+  if (hasGSAP) {
+    const heroSlideshow = document.querySelector('.hero-slideshow');
+    if (heroSlideshow) {
+      gsap.to('.hero-slideshow .slide img', {
+        y: 80,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: heroSlideshow,
+          start: 'top top',
+          end: 'bottom top',
+          scrub: 0.8,
+        },
+      });
+    }
+
+    // Page hero parallax
+    const pageHero = document.querySelector('.hero');
+    if (pageHero) {
+      gsap.fromTo(pageHero.querySelector('.container'),
+        { opacity: 0, y: 30 },
+        { opacity: 1, y: 0, duration: 1, ease: 'power3.out', delay: 0.2 }
+      );
+    }
+  }
+
+  // ---------- GSAP Scroll Animations ----------
+  if (hasGSAP) {
+    // Fade-in elements with staggered grid support
+    const fadeElements = document.querySelectorAll('.fade-in');
+    fadeElements.forEach(el => {
+      // Check if this element is part of a grid (stagger children together)
+      const parent = el.parentElement;
+      if (parent && (parent.classList.contains('grid-2') || parent.classList.contains('grid-3') || parent.classList.contains('grid-4'))) {
+        // Let the grid batch handle it
+        return;
       }
+      gsap.fromTo(el,
+        { opacity: 0, y: 40 },
+        {
+          opacity: 1, y: 0, duration: 0.8, ease: 'power3.out',
+          scrollTrigger: { trigger: el, start: 'top 88%', once: true },
+        }
+      );
     });
-  }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
-  fadeElements.forEach(el => fadeObserver.observe(el));
+
+    // Staggered grid reveals
+    document.querySelectorAll('.grid-2, .grid-3, .grid-4').forEach(grid => {
+      const children = grid.querySelectorAll('.fade-in, .card, .event-card, .program-card');
+      if (children.length === 0) return;
+      gsap.fromTo(children,
+        { opacity: 0, y: 50 },
+        {
+          opacity: 1, y: 0, duration: 0.7, stagger: 0.12, ease: 'power3.out',
+          scrollTrigger: { trigger: grid, start: 'top 85%', once: true },
+        }
+      );
+    });
+
+    // Section labels slide in
+    document.querySelectorAll('.section-label').forEach(label => {
+      gsap.fromTo(label,
+        { opacity: 0, x: -20 },
+        {
+          opacity: 1, x: 0, duration: 0.6, ease: 'power3.out',
+          scrollTrigger: { trigger: label, start: 'top 90%', once: true },
+        }
+      );
+    });
+
+    // Section titles
+    document.querySelectorAll('.section-title').forEach(title => {
+      gsap.fromTo(title,
+        { opacity: 0, y: 20 },
+        {
+          opacity: 1, y: 0, duration: 0.7, ease: 'power3.out',
+          scrollTrigger: { trigger: title, start: 'top 88%', once: true },
+        }
+      );
+    });
+
+    // CTA Banner scale entrance
+    document.querySelectorAll('.cta-banner').forEach(banner => {
+      gsap.fromTo(banner.querySelector('.container'),
+        { opacity: 0, y: 40 },
+        {
+          opacity: 1, y: 0, duration: 0.9, ease: 'power3.out',
+          scrollTrigger: { trigger: banner, start: 'top 80%', once: true },
+        }
+      );
+    });
+
+    // Footer reveal
+    const footer = document.querySelector('.footer');
+    if (footer) {
+      gsap.fromTo(footer.querySelector('.footer-grid'),
+        { opacity: 0, y: 30 },
+        {
+          opacity: 1, y: 0, duration: 0.8, ease: 'power3.out',
+          scrollTrigger: { trigger: footer, start: 'top 90%', once: true },
+        }
+      );
+    }
+
+    // About page image reveal
+    const aboutImage = document.querySelector('.about-content .about-image');
+    if (aboutImage) {
+      gsap.fromTo(aboutImage,
+        { opacity: 0, scale: 0.95, x: -30 },
+        {
+          opacity: 1, scale: 1, x: 0, duration: 1, ease: 'power3.out',
+          scrollTrigger: { trigger: aboutImage, start: 'top 85%', once: true },
+        }
+      );
+    }
+
+    // Gallery grid stagger
+    const galleryGrid = document.querySelector('.gallery-grid');
+    if (galleryGrid) {
+      const observer = new MutationObserver(() => {
+        const items = galleryGrid.querySelectorAll('.gallery-item');
+        if (items.length > 0) {
+          gsap.fromTo(items,
+            { opacity: 0, y: 40, scale: 0.96 },
+            { opacity: 1, y: 0, scale: 1, duration: 0.6, stagger: 0.08, ease: 'power3.out' }
+          );
+          observer.disconnect();
+        }
+      });
+      observer.observe(galleryGrid, { childList: true });
+    }
+
+  } else {
+    // Fallback: IntersectionObserver for fade-in if GSAP not loaded
+    const fadeElements = document.querySelectorAll('.fade-in');
+    const fadeObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          fadeObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+    fadeElements.forEach(el => fadeObserver.observe(el));
+  }
 
   // ---------- Gallery Modal ----------
   const galleryItems = document.querySelectorAll('.gallery-item');
